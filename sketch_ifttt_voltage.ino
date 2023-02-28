@@ -10,24 +10,33 @@
 #define TXp2 17
 #define TIME_ZONE 8
 
-struct simpleDatetime {
+struct utc_date {
   String date;
-  String hour;
+  long utc;
 };
 
 // 從 NTP 國家標準時間伺服器取得時間需要的工具
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP);
 
+String weekDays[7]={"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+String months[12]={"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+String eventNames[6] = {"cshs_voltage", "cshs_voltage_2", "cshs_voltage_3", "CSHS_VOLTAGE_4", "cshs_voltage_5", "cshs_voltage_6"};
+String ifff_keys[6] = {
+  "fXF1Fdj9Ny6QqkJQm7_JC",
+  "fXF1Fdj9Ny6QqkJQm7_JC",
+  "dDlLrxTmY0OT2FcwExJT9AgeNpX55yYjkWfAdvTx0d4",
+  "_22_7B5WgrifZC-lFNqAD",
+  "dDlLrxTmY0OT2FcwExJT9AgeNpX55yYjkWfAdvTx0d4",
+  "_22_7B5WgrifZC-lFNqAD"
+};
+
 const char* ssid = "CSHS_T36_AP_2G"; //輸入wifi ssid
 const char* password = "51685168"; //輸入wifi 密碼
 // const char* ssid = "iPhone-YJL"; //輸入wifi ssid
 // const char* password = "newpsw714734"; //輸入wifi 密碼
-String eventName = "cshs_voltage_3";
-String key="dDlLrxTmY0OT2FcwExJT9AgeNpX55yYjkWfAdvTx0d4";
-String iftttUrl="https://maker.ifttt.com/trigger/" + eventName + "/with/key/" + key;
-String weekDays[7]={"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-String months[12]={"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+const int device_no = 1;
+const String iftttUrl="https://maker.ifttt.com/trigger/" + eventNames[device_no-1] + "/with/key/" + ifff_keys[device_no-1];
 
 void initWiFi() {
   WiFi.begin(ssid, password);
@@ -54,24 +63,18 @@ void initNTP() {
   Serial.println("\nNTP client is ready.");
 }
 
-String getCurrentDate() {
+struct utc_date getCurrentDateTime() {
   time_t epochTime = timeClient.getEpochTime();
   struct tm *ptm = gmtime ((time_t *)&epochTime); 
   int monthDay = ptm->tm_mday;
   int currentMonth = ptm->tm_mon+1;
   String currentMonthName = months[currentMonth-1];
   int currentYear = ptm->tm_year+1900;
-  return String(currentYear) + "-" + String(currentMonth) + "-" + String(monthDay);
-}
 
-struct simpleDatetime getCurrentDateTime() {
-  struct simpleDatetime dt;
-  // String formattedDate = timeClient.getFormattedTime();
-  // int splitT = formattedDate.indexOf("T");
-  // dt.date = formattedDate.substring(0, splitT);
-  // dt.hour = formattedDate.substring(splitT+1, formattedDate.length()-1);
-  dt.date = getCurrentDate();
-  dt.hour = timeClient.getFormattedTime();
+  struct utc_date dt;
+  dt.date = String(currentYear) + "-" + String(currentMonth) + "-" + String(monthDay) 
+    + "%20" + ptm->tm_hour + ":" + ptm->tm_min + ":" + ptm->tm_sec;
+  dt.utc = epochTime;
   return dt;
 }
 
@@ -96,11 +99,11 @@ int sendIFTTT(double voltage) {
 }
 
 String getRequestUrl(double voltage) {
-  struct simpleDatetime dtNow = getCurrentDateTime();
+  struct utc_date dtNow = getCurrentDateTime();
   return iftttUrl 
-    + "?value1=" + String(voltage)
+    + "?value1=" + String(dtNow.utc)
     + "&value2=" + String(dtNow.date)
-    + "&value3=" + String(dtNow.hour);
+    + "&value3=" + String(voltage);
 }
 
 void setup() {
@@ -118,7 +121,7 @@ void loop() {
     Serial.println(voltageStr);
     
     HTTPClient http;
-    Serial.print("===HTTP Send data to IFTTT===\n");
+    Serial.println("===HTTP Send data to IFTTT (" + eventNames[device_no - 1] + "===");
     // String requestStr = iftttUrl + "?value1=" + String(voltageStr.toFloat());
     String requestStr = getRequestUrl(voltageStr.toFloat());
     Serial.println("Getting: " + requestStr);

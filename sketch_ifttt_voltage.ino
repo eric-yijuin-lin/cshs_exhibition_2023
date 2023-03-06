@@ -21,21 +21,20 @@ NTPClient timeClient(ntpUDP);
 
 String weekDays[7]={"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 String months[12]={"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-String eventNames[6] = {"cshs_voltage", "cshs_voltage_2", "cshs_voltage_3", "CSHS_VOLTAGE_4", "cshs_voltage_5", "cshs_voltage_6"};
-String ifff_keys[6] = {
+String eventNames[7] = {"cshs_voltage", "cshs_voltage_2", "cshs_voltage_3", "CSHS_VOLTAGE_4", "cshs_voltage_5", "cshs_voltage_6", "cshs_voltage_7"};
+String ifff_keys[7] = {
   "fXF1Fdj9Ny6QqkJQm7_JC",
   "fXF1Fdj9Ny6QqkJQm7_JC",
   "dDlLrxTmY0OT2FcwExJT9AgeNpX55yYjkWfAdvTx0d4",
   "_22_7B5WgrifZC-lFNqAD",
   "dDlLrxTmY0OT2FcwExJT9AgeNpX55yYjkWfAdvTx0d4",
-  "_22_7B5WgrifZC-lFNqAD"
+  "_22_7B5WgrifZC-lFNqAD",
+  "bSbeh_itzdlFGyh0mDsxzA"
 };
 
 const char* ssid = "CSHS_T36_AP_2G"; //輸入wifi ssid
 const char* password = "51685168"; //輸入wifi 密碼
-// const char* ssid = "iPhone-YJL"; //輸入wifi ssid
-// const char* password = "newpsw714734"; //輸入wifi 密碼
-const int device_no = 1;
+const int device_no = -1; //輸入工具人編號
 const String iftttUrl="https://maker.ifttt.com/trigger/" + eventNames[device_no-1] + "/with/key/" + ifff_keys[device_no-1];
 
 void initWiFi() {

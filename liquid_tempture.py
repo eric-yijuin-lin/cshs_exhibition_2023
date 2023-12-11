@@ -13,8 +13,8 @@ display.text('Connected', 0, 0, 1)
 display.show()
 
 # 設定 ThingSpeak 網址、金鑰
-url = "https://api.thingspeak.com/update"
-api_key = "你的金鑰"
+url = "http://api.thingspeak.com/update"
+api_key = "JF5LE1V27O8K5U11"
 
 # 設定 wifi SSID 名稱、wifi 密碼與伺服器網址
 WIFI_SSID = '你的手機熱點'
@@ -52,7 +52,6 @@ while True:
   time.sleep_ms(750)
   for rom in roms:
     tempture = ds_sensor.read_temp(rom)
-    tempture = 12.34
     current_time = time.time() - start_time
     print(f"{current_time} sec\n  {tempture}")
     

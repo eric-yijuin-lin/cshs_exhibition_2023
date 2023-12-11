@@ -14,7 +14,7 @@ display.show()
 
 # 設定 ThingSpeak 網址、金鑰
 url = "https://api.thingspeak.com/update"
-api_key = "JF5LE1V27O8K5U11"
+api_key = "你的金鑰"
 
 # 設定 wifi SSID 名稱、wifi 密碼與伺服器網址
 WIFI_SSID = '你的手機熱點'
